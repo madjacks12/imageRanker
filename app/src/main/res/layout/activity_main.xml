@@ -19,7 +19,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/textView" />
+
 
     <Button
         android:id="@+id/rankButton"
@@ -31,5 +33,13 @@
         android:backgroundTint="@color/colorAccent"
         android:text="Rank Your Photos"
         />
+
+    <ImageView
+        android:id="@+id/ivPreview"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        app:srcCompat="@android:drawable/alert_light_frame" />
 
 </RelativeLayout>
