@@ -1,4 +1,4 @@
-package com.mdjdev.imagerank;
+package com.mdjdev.imagerank.ui;
 
 import android.content.ClipData;
 import android.content.ComponentName;
@@ -14,6 +14,8 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.mdjdev.imagerank.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
