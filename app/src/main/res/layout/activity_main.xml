@@ -29,10 +29,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="91dp"
+        android:layout_marginBottom="47dp"
         android:backgroundTint="@color/colorAccent"
-        android:text="Rank Your Photos"
-        />
+        android:text="Rank Your Photos" />
 
     <ImageView
         android:id="@+id/ivPreview"
@@ -41,8 +40,16 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         />
+
     <TextView
+        android:id="@+id/focusScore"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivPreview"
+        android:layout_centerHorizontal="true"
+        android:text="SAMPLE TEXT"
+        android:textColor="@color/colorAccent"
+        android:textSize="25dp"
+        />
 
 </RelativeLayout>

@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.mdjdev.imagerank.Constants;
 import com.mdjdev.imagerank.R;
@@ -52,9 +53,12 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import clarifai2.dto.prediction.Focus;
 
+import static java.lang.String.valueOf;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 @Bind(R.id.rankButton) Button mRankButton;
 @Bind(R.id.ivPreview) ImageView mIvPreview;
+@Bind(R.id.focusScore) TextView mFocusScore;
 InputStream inputStream = null;
 String filePath = null;
 public static final int PICK_IMAGE = 100;
@@ -141,10 +145,13 @@ public static final int PICK_IMAGE = 100;
                 if (!response.isSuccessful()) {
                 }
                 final List<ClarifaiOutput<Focus>> results = response.get();
-                Log.d("RESULTS", results.get(0).data().toString());
+                double value = results.get(0).data().get(0).value();
+
+                Log.d("RESULTS", valueOf(value));
+
                 Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                 mIvPreview.setImageBitmap(decodedBitmap);
-
+                mFocusScore.setText("Focus score: " + value);
             }
         }.execute();
     }
