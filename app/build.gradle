@@ -17,7 +17,7 @@ android {
         }
     }
     buildTypes.each {
-        it.buildConfigField('String', 'CLARAFAI_TOKEN', ClarafaiToken)
+        it.buildConfigField('String', 'CLARIFAI_TOKEN', ClarifiToken)
     }
     compileOptions {
         targetCompatibility 1.8

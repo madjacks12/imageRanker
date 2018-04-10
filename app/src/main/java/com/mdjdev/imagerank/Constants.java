@@ -5,5 +5,5 @@ package com.mdjdev.imagerank;
  */
 
 public class Constants {
-    public static final String CLARAFAI_TOKEN = BuildConfig.CLARAFAI_TOKEN;
+    public static final String CLARIFAI_TOKEN = BuildConfig.CLARIFAI_TOKEN;
 }
