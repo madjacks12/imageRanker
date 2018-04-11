@@ -24,14 +24,38 @@
 
 
     <Button
-        android:id="@+id/rankButton"
+        android:id="@+id/focusButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="47dp"
+        android:textSize="12dp"
+        android:layout_marginBottom="22dp"
         android:backgroundTint="@color/colorAccent"
-        android:text="Rank Your Photos" />
+        android:text="Focus Rating" />
+
+    <Button
+        android:id="@+id/portraitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/focusButton"
+        android:layout_alignBottom="@+id/focusButton"
+        android:layout_toLeftOf="@+id/focusButton"
+        android:layout_toStartOf="@+id/focusButton"
+        android:backgroundTint="@color/colorAccent"
+        android:text="Portrait Rating"
+        android:textSize="12dp" />
+
+    <Button
+        android:id="@+id/landscapeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/focusButton"
+        android:backgroundTint="@color/colorAccent"
+        android:text="Landscape Rating"
+        android:textSize="12dp" />
 
     <ImageView
         android:id="@+id/ivPreview"
@@ -47,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ivPreview"
         android:layout_centerHorizontal="true"
-        android:text="SAMPLE TEXT"
+        android:text=""
         android:textColor="@color/colorAccent"
         android:textSize="25dp"
         />

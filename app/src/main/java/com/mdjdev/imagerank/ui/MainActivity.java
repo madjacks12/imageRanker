@@ -1,20 +1,13 @@
 package com.mdjdev.imagerank.ui;
 
-import android.content.ClipData;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,58 +18,67 @@ import com.mdjdev.imagerank.Constants;
 import com.mdjdev.imagerank.R;
 import com.mdjdev.imagerank.service.ClarafaiService;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import clarifai2.api.ClarifaiBuilder;
 import clarifai2.api.ClarifaiClient;
 import clarifai2.api.ClarifaiResponse;
+import clarifai2.api.request.model.PredictRequest;
 import clarifai2.dto.input.ClarifaiImage;
 import clarifai2.dto.input.ClarifaiInput;
-import clarifai2.dto.model.ConceptModel;
 import clarifai2.dto.model.FocusModel;
 import clarifai2.dto.model.output.ClarifaiOutput;
-import clarifai2.dto.prediction.Concept;
 
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
+import java.text.NumberFormat;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import clarifai2.dto.prediction.Focus;
+import clarifai2.dto.prediction.Prediction;
 
 import static java.lang.String.valueOf;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-@Bind(R.id.rankButton) Button mRankButton;
+@Bind(R.id.focusButton) Button mFocusButton;
+@Bind(R.id.portraitButton) Button mPortraitButton;
+@Bind(R.id.landscapeButton) Button mLandscapeButton;
 @Bind(R.id.ivPreview) ImageView mIvPreview;
 @Bind(R.id.focusScore) TextView mFocusScore;
 InputStream inputStream = null;
 String filePath = null;
 public static final int PICK_IMAGE = 100;
+String selectedButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mRankButton.setOnClickListener(this);
+        mFocusButton.setOnClickListener(this);
+        mPortraitButton.setOnClickListener(this);
+        mLandscapeButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
 
-        if (v == mRankButton) {
+        if (v == mFocusButton) {
             startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_IMAGE);
-
+            selectedButton = "focus";
+        }
+        if (v == mLandscapeButton) {
+            startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_IMAGE);
+            selectedButton = "landscape";
+        }
+        if (v == mPortraitButton) {
+            startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_IMAGE);
+            selectedButton = "portrait";
         }
     }
 
@@ -129,33 +131,92 @@ public static final int PICK_IMAGE = 100;
 
     private void onImagePicked(@NonNull final byte[] imageBytes) {
 
-
-        new AsyncTask<Void, Void, ClarifaiResponse<List<ClarifaiOutput<Focus>>>>() {
-            @Override protected ClarifaiResponse<List<ClarifaiOutput<Focus>>> doInBackground(Void... params) {
-                // The default Clarifai model that identifies concepts in images
-                final ClarifaiClient client = new ClarifaiBuilder(Constants.CLARIFAI_TOKEN).buildSync();
-                FocusModel focusModel = client.getDefaultModels().focusModel();
-                // Use this model to predict, with the image that the user just selected as the input
-                return focusModel.predict()
-                        .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(imageBytes)))
-                        .executeSync();
-            }
-
-            protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Focus>>> response) {
-                if (!response.isSuccessful()) {
+        if (selectedButton == "focus") {
+            new AsyncTask<Void, Void, ClarifaiResponse<List<ClarifaiOutput<Focus>>>>() {
+                @Override
+                protected ClarifaiResponse<List<ClarifaiOutput<Focus>>> doInBackground(Void... params) {
+                    // The default Clarifai model that identifies concepts in images
+                    final ClarifaiClient client = new ClarifaiBuilder(Constants.CLARIFAI_TOKEN).buildSync();
+                    FocusModel focusModel = client.getDefaultModels().focusModel();
+                    // Use this model to predict, with the image that the user just selected as the input
+                    return focusModel.predict()
+                            .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(imageBytes)))
+                            .executeSync();
                 }
-                final List<ClarifaiOutput<Focus>> results = response.get();
-                double value = results.get(0).data().get(0).value();
 
-                Log.d("RESULTS", valueOf(value));
+                protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Focus>>> response) {
+                    if (!response.isSuccessful()) {
+                    }
+                    final List<ClarifaiOutput<Focus>> results = response.get();
+                    double value = results.get(0).data().get(0).value() * 100;
+                    NumberFormat numberFormat = NumberFormat.getNumberInstance();
+                    numberFormat.setMaximumFractionDigits(2);
 
-                Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                mIvPreview.setImageBitmap(decodedBitmap);
-                mFocusScore.setText("Focus score: " + value);
-            }
-        }.execute();
+                    Log.d("RESULTS", valueOf(value));
+
+                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    mIvPreview.setImageBitmap(decodedBitmap);
+                    mFocusScore.setText("Focus score: " + numberFormat.format(value));
+                }
+            }.execute();
+        }
+        if (selectedButton == "portrait") {
+            new AsyncTask<Void, Void, ClarifaiResponse<List<ClarifaiOutput<Prediction>>>>() {
+                @Override
+                protected ClarifaiResponse<List<ClarifaiOutput<Prediction>>> doInBackground(Void... params) {
+                    // The default Clarifai model that identifies concepts in images
+                    final ClarifaiClient client = new ClarifaiBuilder(Constants.CLARIFAI_TOKEN).buildSync();
+                    PredictRequest<Prediction> portraitModel = client.predict("de9bd05cfdbf4534af151beb2a5d0953");
+                    // Use this model to predict, with the image that the user just selected as the input
+                    return portraitModel.withInputs().withInputs(ClarifaiInput.forImage(ClarifaiImage.of(imageBytes)))
+                            .executeSync();
+                }
+
+                protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Prediction>>> response) {
+                    if (!response.isSuccessful()) {
+                    }
+                    final List<ClarifaiOutput<Prediction>> results = response.get();
+                    Float value = results.get(0).data().get(0).asConcept().value() * 100;
+                    NumberFormat numberFormat = NumberFormat.getNumberInstance();
+                    numberFormat.setMaximumFractionDigits(2);
+
+                    Log.d("RESULTS", valueOf(value));
+
+                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    mIvPreview.setImageBitmap(decodedBitmap);
+                    mFocusScore.setText("Portrait score: " + numberFormat.format(value));
+                }
+            }.execute();
+        }
+        if (selectedButton == "landscape") {
+            new AsyncTask<Void, Void, ClarifaiResponse<List<ClarifaiOutput<Prediction>>>>() {
+                @Override
+                protected ClarifaiResponse<List<ClarifaiOutput<Prediction>>> doInBackground(Void... params) {
+                    // The default Clarifai model that identifies concepts in images
+                    final ClarifaiClient client = new ClarifaiBuilder(Constants.CLARIFAI_TOKEN).buildSync();
+                    PredictRequest<Prediction> portraitModel = client.predict("bec14810deb94c40a05f1f0eb3c91403");
+                    // Use this model to predict, with the image that the user just selected as the input
+                    return portraitModel.withInputs().withInputs(ClarifaiInput.forImage(ClarifaiImage.of(imageBytes)))
+                            .executeSync();
+                }
+
+                protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Prediction>>> response) {
+                    if (!response.isSuccessful()) {
+                    }
+                    final List<ClarifaiOutput<Prediction>> results = response.get();
+                    Float value = results.get(0).data().get(0).asConcept().value() * 100;
+                    NumberFormat numberFormat = NumberFormat.getNumberInstance();
+                    numberFormat.setMaximumFractionDigits(2);
+
+                    Log.d("RESULTS", valueOf(value));
+
+                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    mIvPreview.setImageBitmap(decodedBitmap);
+                    mFocusScore.setText("Landscape score: " + numberFormat.format(value));
+                }
+            }.execute();
+        }
     }
-
 
 
     public static byte[] retrieveSelectedImage(@NonNull Context context, @NonNull Intent data) {
