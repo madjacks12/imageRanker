@@ -8,19 +8,25 @@
     android:background="@drawable/background_gradient">
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="67dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Hello"
         android:textColor="@color/colorAccent"
         android:textSize="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.539"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/textView" />
+        app:layout_constraintVertical_bias="0.084" />
 
 
     <Button
@@ -29,10 +35,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:textSize="12dp"
-        android:layout_marginBottom="22dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="132dp"
+        android:layout_marginTop="8dp"
         android:backgroundTint="@color/colorAccent"
-        android:text="Focus Rating" />
+        android:text="Focus Rating"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/portraitButton"
@@ -40,11 +52,20 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/focusButton"
         android:layout_alignBottom="@+id/focusButton"
-        android:layout_toLeftOf="@+id/focusButton"
-        android:layout_toStartOf="@+id/focusButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:backgroundTint="@color/colorAccent"
         android:text="Portrait Rating"
-        android:textSize="12dp" />
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.995"
+        app:layout_constraintStart_toStartOf="@+id/landscapeButton" />
 
     <Button
         android:id="@+id/landscapeButton"
@@ -55,25 +76,32 @@
         android:layout_alignTop="@+id/focusButton"
         android:backgroundTint="@color/colorAccent"
         android:text="Landscape Rating"
-        android:textSize="12dp" />
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
         android:id="@+id/ivPreview"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        />
+        android:layout_marginTop="14dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/focusScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivPreview"
+        android:layout_alignBottom="@id/ivPreview"
         android:layout_centerHorizontal="true"
-        android:text=""
+        android:layout_marginBottom="13dp"
         android:textColor="@color/colorAccent"
         android:textSize="25dp"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </RelativeLayout>
