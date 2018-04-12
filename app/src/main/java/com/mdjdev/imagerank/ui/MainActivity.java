@@ -55,6 +55,7 @@ String filePath = null;
 public static final int PICK_IMAGE = 100;
 String selectedButton;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,14 +178,41 @@ String selectedButton;
                     }
                     final List<ClarifaiOutput<Prediction>> results = response.get();
                     Float value = results.get(0).data().get(0).asConcept().value() * 100;
+                    String qualityName = results.get(0).data().get(0).asConcept().name();
+
                     NumberFormat numberFormat = NumberFormat.getNumberInstance();
                     numberFormat.setMaximumFractionDigits(2);
 
+                    String qualityRating = null;
+                    if (value > 75 && qualityName.contains("high")) {
+                        qualityRating = "Excellent Quality";
+                    }
+                    else if (qualityName.contains("high") && value > 50 && value < 76) {
+                        qualityRating = "Good Quality";
+                    }
+                    else if (qualityName.contains("high") && value > 25 && value < 51) {
+                        qualityRating = "OK Quality";
+                    }
+
+                    else if (qualityName.contains("low") && value > 75) {
+                        qualityRating = "Terrible Quality";
+                    }
+                    else if (qualityName.contains("low") && value > 50 && value < 76) {
+                        qualityRating = "Poor Quality";
+                    }
+                    else if (qualityName.contains("low") && value > 25 && value < 51) {
+                        qualityRating = "Mediocre Quality";
+                    }
+                    else {
+                        qualityRating = "Could not determine quality";
+                    }
+
                     Log.d("RESULTS", valueOf(value));
+                    Log.d("2nd", qualityRating);
 
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                     mIvPreview.setImageBitmap(decodedBitmap);
-                    mFocusScore.setText("Portrait score: " + numberFormat.format(value));
+                    mFocusScore.setText(qualityRating);
                 }
             }.execute();
         }
@@ -205,14 +233,41 @@ String selectedButton;
                     }
                     final List<ClarifaiOutput<Prediction>> results = response.get();
                     Float value = results.get(0).data().get(0).asConcept().value() * 100;
+                    String qualityName = results.get(0).data().get(0).asConcept().name();
+
                     NumberFormat numberFormat = NumberFormat.getNumberInstance();
                     numberFormat.setMaximumFractionDigits(2);
 
+                    String qualityRating = null;
+                    if (value > 75 && qualityName.contains("high")) {
+                        qualityRating = "Excellent Quality";
+                    }
+                    else if (qualityName.contains("high") && value > 50 && value < 76) {
+                        qualityRating = "Good Quality";
+                    }
+                    else if (qualityName.contains("high") && value > 25 && value < 51) {
+                        qualityRating = "OK Quality";
+                    }
+
+                    else if (qualityName.contains("low") && value > 75) {
+                        qualityRating = "Terrible Quality";
+                    }
+                    else if (qualityName.contains("low") && value > 50 && value < 76) {
+                        qualityRating = "Poor Quality";
+                    }
+                    else if (qualityName.contains("low") && value > 25 && value < 51) {
+                        qualityRating = "Mediocre Quality";
+                    }
+                    else {
+                        qualityRating = "Could not determine quality";
+                    }
+
                     Log.d("RESULTS", valueOf(value));
+                    Log.d("2nd", qualityRating);
 
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                     mIvPreview.setImageBitmap(decodedBitmap);
-                    mFocusScore.setText("Landscape score: " + numberFormat.format(value));
+                    mFocusScore.setText(qualityRating);
                 }
             }.execute();
         }
