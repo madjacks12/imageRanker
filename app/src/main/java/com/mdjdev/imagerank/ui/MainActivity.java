@@ -2,9 +2,11 @@ package com.mdjdev.imagerank.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -69,46 +72,30 @@ String selectedButton;
     @Override
     public void onClick(View v) {
 
+
         if (v == mFocusButton) {
-            startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_IMAGE);
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getApplication().getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, PICK_IMAGE);
+            }
             selectedButton = "focus";
         }
         if (v == mLandscapeButton) {
-            startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_IMAGE);
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getApplication().getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, PICK_IMAGE);
+            }
             selectedButton = "landscape";
         }
         if (v == mPortraitButton) {
-            startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_IMAGE);
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getApplication().getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, PICK_IMAGE);
+            }
             selectedButton = "portrait";
         }
     }
 
-
-//    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (data.getClipData() != null) {
-//            ClipData mClipData = data.getClipData();
-//            ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
-//            ArrayList<Bitmap>mBitmapsSelected = new ArrayList<Bitmap>();
-//            for (int i = 0; i < mClipData.getItemCount(); i++) {
-//                ClipData.Item item = mClipData.getItemAt(i);
-//                Uri uri = item.getUri();
-//                mArrayUri.add(uri);
-//                try {
-//                    inputStream = getContentResolver().openInputStream(uri);
-//                    File photoFile = createTemporalFileFrom(inputStream);
-//
-//                    filePath = photoFile.getPath();
-//                    getRankings(filePath);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
 
     public void getRankings(String imagePath) {
         final ClarafaiService clarafaiService = new ClarafaiService();
@@ -122,9 +109,14 @@ String selectedButton;
         }
         switch(requestCode) {
             case PICK_IMAGE:
-                final byte[] imageBytes = retrieveSelectedImage(this, data);
-                if (imageBytes != null) {
-                    onImagePicked(imageBytes);
+                Bundle extras = data.getExtras();
+                Bitmap bmp = (Bitmap) extras.get("data");
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+                bmp.recycle();
+                if (byteArray != null) {
+                    onImagePicked(byteArray);
                 }
                 break;
         }
@@ -274,31 +266,28 @@ String selectedButton;
     }
 
 
-    public static byte[] retrieveSelectedImage(@NonNull Context context, @NonNull Intent data) {
-        InputStream inStream = null;
-        Bitmap bitmap = null;
-        try {
-            inStream = context.getContentResolver().openInputStream(data.getData());
-            bitmap = BitmapFactory.decodeStream(inStream);
-            final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-            return outStream.toByteArray();
-        } catch (FileNotFoundException e) {
-            return null;
-        } finally {
-            if (inStream != null) {
-                try {
-                    inStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-            if (bitmap != null) {
-                bitmap.recycle();
-
-            }
-        }
+//    public static byte[] retrieveSelectedImage(@NonNull Context context, @NonNull Intent data) {
+//
+//        Bitmap bitmap = null;
+//        try {
+//            final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+//            return outStream.toByteArray();
+//        } catch (FileNotFoundException e) {
+//            return null;
+//        } finally {
+//            if (inStream != null) {
+//                try {
+//                    inStream.close();
+//                } catch (IOException ignored) {
+//                }
+//            }
+//            if (bitmap != null) {
+//                bitmap.recycle();
+//
+//            }
+//        }
     }
 
 
 
-}

@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ImageRank.iml" filepath="$PROJECT_DIR$/ImageRank.iml" />
+      <module fileurl="file://C:\Users\Matthew\Desktop\imageRanker\ImageRank.iml" filepath="C:\Users\Matthew\Desktop\imageRanker\ImageRank.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/imageRanker.iml" filepath="$PROJECT_DIR$/imageRanker.iml" />
       <module fileurl="file://$PROJECT_DIR$/imageRanker.iml" filepath="$PROJECT_DIR$/imageRanker.iml" />
     </modules>
   </component>
