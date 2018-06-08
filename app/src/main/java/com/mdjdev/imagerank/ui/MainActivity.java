@@ -48,15 +48,20 @@ import clarifai2.dto.prediction.Prediction;
 import static java.lang.String.valueOf;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-@Bind(R.id.focusButton) Button mFocusButton;
-@Bind(R.id.portraitButton) Button mPortraitButton;
-@Bind(R.id.landscapeButton) Button mLandscapeButton;
-@Bind(R.id.ivPreview) ImageView mIvPreview;
-@Bind(R.id.focusScore) TextView mFocusScore;
-InputStream inputStream = null;
-String filePath = null;
-public static final int PICK_IMAGE = 100;
-String selectedButton;
+    @Bind(R.id.focusButton)
+    Button mFocusButton;
+    @Bind(R.id.portraitButton)
+    Button mPortraitButton;
+    @Bind(R.id.landscapeButton)
+    Button mLandscapeButton;
+    @Bind(R.id.ivPreview)
+    ImageView mIvPreview;
+    @Bind(R.id.focusScore)
+    TextView mFocusScore;
+    InputStream inputStream = null;
+    String filePath = null;
+    public static final int PICK_IMAGE = 100;
+    String selectedButton;
 
 
     @Override
@@ -74,26 +79,17 @@ String selectedButton;
 
 
         if (v == mFocusButton) {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getApplication().getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, PICK_IMAGE);
+            startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_IMAGE);
             }
             selectedButton = "focus";
-        }
         if (v == mLandscapeButton) {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getApplication().getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, PICK_IMAGE);
+            startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_IMAGE);
             }
             selectedButton = "landscape";
-        }
         if (v == mPortraitButton) {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getApplication().getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, PICK_IMAGE);
-            }
-            selectedButton = "portrait";
+            startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_IMAGE);
         }
+        selectedButton = "portrait";
     }
 
 
@@ -107,17 +103,13 @@ String selectedButton;
         if (resultCode != RESULT_OK) {
             return;
         }
-        switch(requestCode) {
+        switch (requestCode) {
             case PICK_IMAGE:
-                Bundle extras = data.getExtras();
-                Bitmap bmp = (Bitmap) extras.get("data");
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
-                bmp.recycle();
-                if (byteArray != null) {
-                    onImagePicked(byteArray);
+                final byte[] imageBytes = retrieveSelectedImage(this, data);
+                if (imageBytes != null) {
+                    onImagePicked(imageBytes);
                 }
+                Log.d("pick image", "pick image ");
                 break;
         }
     }
@@ -154,6 +146,7 @@ String selectedButton;
             }.execute();
         }
         if (selectedButton == "portrait") {
+            Log.d("portrait", "portrait called ");
             new AsyncTask<Void, Void, ClarifaiResponse<List<ClarifaiOutput<Prediction>>>>() {
                 @Override
                 protected ClarifaiResponse<List<ClarifaiOutput<Prediction>>> doInBackground(Void... params) {
@@ -170,6 +163,8 @@ String selectedButton;
                     }
                     final List<ClarifaiOutput<Prediction>> results = response.get();
                     Float value = results.get(0).data().get(0).asConcept().value() * 100;
+                    int roundedValue = Math.round(value);
+                    String stringValue = String.valueOf(roundedValue);
                     String qualityName = results.get(0).data().get(0).asConcept().name();
 
                     NumberFormat numberFormat = NumberFormat.getNumberInstance();
@@ -178,24 +173,17 @@ String selectedButton;
                     String qualityRating = null;
                     if (value > 75 && qualityName.contains("high")) {
                         qualityRating = "Excellent Quality";
-                    }
-                    else if (qualityName.contains("high") && value > 50 && value < 76) {
+                    } else if (qualityName.contains("high") && value > 50 && value < 76) {
                         qualityRating = "Good Quality";
-                    }
-                    else if (qualityName.contains("high") && value > 25 && value < 51) {
+                    } else if (qualityName.contains("high") && value > 25 && value < 51) {
                         qualityRating = "OK Quality";
-                    }
-
-                    else if (qualityName.contains("low") && value > 75) {
+                    } else if (qualityName.contains("low") && value > 75) {
                         qualityRating = "Terrible Quality";
-                    }
-                    else if (qualityName.contains("low") && value > 50 && value < 76) {
+                    } else if (qualityName.contains("low") && value > 50 && value < 76) {
                         qualityRating = "Poor Quality";
-                    }
-                    else if (qualityName.contains("low") && value > 25 && value < 51) {
+                    } else if (qualityName.contains("low") && value > 25 && value < 51) {
                         qualityRating = "Mediocre Quality";
-                    }
-                    else {
+                    } else {
                         qualityRating = "Could not determine quality";
                     }
 
@@ -204,7 +192,7 @@ String selectedButton;
 
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                     mIvPreview.setImageBitmap(decodedBitmap);
-                    mFocusScore.setText(qualityRating);
+                    mFocusScore.setText(qualityRating + " " + stringValue);
                 }
             }.execute();
         }
@@ -233,24 +221,17 @@ String selectedButton;
                     String qualityRating = null;
                     if (value > 75 && qualityName.contains("high")) {
                         qualityRating = "Excellent Quality";
-                    }
-                    else if (qualityName.contains("high") && value > 50 && value < 76) {
+                    } else if (qualityName.contains("high") && value > 50 && value < 76) {
                         qualityRating = "Good Quality";
-                    }
-                    else if (qualityName.contains("high") && value > 25 && value < 51) {
+                    } else if (qualityName.contains("high") && value > 25 && value < 51) {
                         qualityRating = "OK Quality";
-                    }
-
-                    else if (qualityName.contains("low") && value > 75) {
+                    } else if (qualityName.contains("low") && value > 75) {
                         qualityRating = "Terrible Quality";
-                    }
-                    else if (qualityName.contains("low") && value > 50 && value < 76) {
+                    } else if (qualityName.contains("low") && value > 50 && value < 76) {
                         qualityRating = "Poor Quality";
-                    }
-                    else if (qualityName.contains("low") && value > 25 && value < 51) {
+                    } else if (qualityName.contains("low") && value > 25 && value < 51) {
                         qualityRating = "Mediocre Quality";
-                    }
-                    else {
+                    } else {
                         qualityRating = "Could not determine quality";
                     }
 
@@ -265,29 +246,30 @@ String selectedButton;
         }
     }
 
-
-//    public static byte[] retrieveSelectedImage(@NonNull Context context, @NonNull Intent data) {
-//
-//        Bitmap bitmap = null;
-//        try {
-//            final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-//            return outStream.toByteArray();
-//        } catch (FileNotFoundException e) {
-//            return null;
-//        } finally {
-//            if (inStream != null) {
-//                try {
-//                    inStream.close();
-//                } catch (IOException ignored) {
-//                }
-//            }
-//            if (bitmap != null) {
-//                bitmap.recycle();
-//
-//            }
-//        }
+    public static byte[] retrieveSelectedImage(@NonNull Context context, @NonNull Intent data) {
+        InputStream inStream = null;
+        Bitmap bitmap = null;
+        try {
+            inStream = context.getContentResolver().openInputStream(data.getData());
+            bitmap = BitmapFactory.decodeStream(inStream);
+            final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            return outStream.toByteArray();
+        } catch (FileNotFoundException e) {
+            return null;
+        } finally {
+            if (inStream != null) {
+                try {
+                    inStream.close();
+                } catch (IOException ignored) {
+                }
+            }
+            if (bitmap != null) {
+                bitmap.recycle();
+            }
+        }
     }
+}
 
 
 
